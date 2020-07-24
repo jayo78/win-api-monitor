@@ -1,4 +1,3 @@
-# Sandbox
 ### Description
 
 This is a basic API monitoring program for running windows executables and intercepting their calls to the WinAPI. It uses minhook as an inline hooking engine and DLL injection as the process injection technique.

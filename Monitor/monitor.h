@@ -1,4 +1,7 @@
+#include "logger.h"
+
 #pragma once
+
 
 // standard information for every hook
 struct HOOK_INFO {
@@ -7,6 +10,10 @@ struct HOOK_INFO {
     LPVOID proxy;
     LPVOID fp;
 };
+
+// logger object - exposes a stream to report to the IPC channel
+Logger logger;
+
 
 // Proxy Function Definitions
 //============================================
@@ -48,7 +55,7 @@ int WINAPI ProxyConnect(SOCKET s, const sockaddr* name, int namelen)
     DWORD sz= 32;
     WSAAddressToStringW((SOCKADDR *)name, namelen, NULL, addr, &sz);
 
-    std::wcout << L"[HOOK] Intercepted call to connect:\n" << L"- IP Address: " << addr << std::endl;
+    logger << L"[HOOK] Intercepted call to connect:\n" << L"- IP Address: " << addr << std::endl;
     return fpConnect(s, name, namelen);
 }
 
@@ -66,19 +73,19 @@ int WINAPI ProxyCreateProcessInternalW
     LPPROCESS_INFORMATION lpProcessInformation, 
     PHANDLE hNewToken)
 {
-    std::wcout << L"[HOOK] Intercepted call to CreateProcessInternalW:\n" << L"- Application Name: " << lpCommandLine << std::endl;
+    logger << L"[HOOK] Intercepted call to CreateProcessInternalW:\n" << L"- Application Name: " << lpCommandLine << std::endl;
     return fpCreateProcessInternalW(hToken, lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation, hNewToken);
 }
 
 int WINAPI ProxyLoadLibraryExW(LPCWSTR lpLibFileName, HANDLE hFile, DWORD dwFlags)
 {
-    std::wcout << L"[HOOK] Intercepted call to LoadLibraryExW:\n" << L"- Library Name: " << lpLibFileName << std::endl;
+    logger << L"[HOOK] Intercepted call to LoadLibraryExW:\n" << L"- Library Name: " << lpLibFileName << std::endl;
     return fpLoadLibraryExW(lpLibFileName, hFile, dwFlags);
 }
 
 int WINAPI ProxyLoadLibraryW(LPCWSTR lpLibFileName)
 {
-    std::wcout << L"[HOOK] Intercepted call to LoadLibraryW:\n" << L"- Library Name: " << lpLibFileName << std::endl;
+    logger << L"[HOOK] Intercepted call to LoadLibraryW:\n" << L"- Library Name: " << lpLibFileName << std::endl;
     return fpLoadLibraryW(lpLibFileName);
 }
 
@@ -86,7 +93,7 @@ int WINAPI ProxyLoadLibraryA(LPCSTR lpLibFileName)
 {
     wchar_t wLibName[128];
     MultiByteToWideChar(CP_THREAD_ACP, (DWORD)0, lpLibFileName, -1, wLibName, 128);
-    std::wcout << L"[HOOK] Intercepted call to LoadLibraryA:\n" << L"- Library Name: " << wLibName << std::endl;
+    logger << L"[HOOK] Intercepted call to LoadLibraryA:\n" << L"- Library Name: " << wLibName << std::endl;
     return fpLoadLibraryA(lpLibFileName);
 }
 
@@ -94,7 +101,7 @@ FARPROC WINAPI ProxyGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 {
     wchar_t wProcName[128];
     MultiByteToWideChar(CP_THREAD_ACP, (DWORD)0, lpProcName, -1, wProcName, 128);
-    std::wcout << L"[HOOK] Intercepted call to GetProcAddress:\n" << L"- Function Name: " << wProcName << std::endl;
+    logger << L"[HOOK] Intercepted call to GetProcAddress:\n" << L"- Function Name: " << wProcName << std::endl;
     return fpGetProcAddress(hModule, lpProcName);
 }
 

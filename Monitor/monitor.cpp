@@ -2,6 +2,7 @@
 #include <iostream>
 #include "MinHook.h"
 #include "monitor.h"
+#include "logger.h"
 
 #pragma comment(lib, "libMinHook-x86mt.lib")
 
@@ -67,7 +68,7 @@ VOID install_all()
     for (int i= 0; i < numElts; i++)
     {
         if (install_hook(&hooks[i]))
-            std::wcout << L"[+] Installed hook in: " << hooks[i].target << std::endl;
+            logger << L"[+] Installed hook in: " << hooks[i].target << "\n";
     }
 }
 
@@ -80,13 +81,17 @@ BOOL WINAPI DllMain(HINSTANCE const instance, DWORD const reason, LPVOID const r
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
-            std::wcout << L"[+] Installing hooks..." << std::endl;
+            logger << L"[+] Installing hooks...\n";
 
             MH_Initialize();
             install_all();
             MH_EnableHook(MH_ALL_HOOKS);
 
-            std::wcout << L"[+] Hooks installed, Resuming main thread..." << std::endl;
+            logger << L"[+] Hooks installed, Resuming main thread..." << std::endl;
+            break;
+
+        case DLL_PROCESS_DETACH:
+            Sleep(7000);
             break;
     }
 

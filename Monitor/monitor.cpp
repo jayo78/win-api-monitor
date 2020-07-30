@@ -89,10 +89,6 @@ BOOL WINAPI DllMain(HINSTANCE const instance, DWORD const reason, LPVOID const r
 
             logger << L"[+] Hooks installed, Resuming main thread..." << std::endl;
             break;
-
-        case DLL_PROCESS_DETACH:
-            Sleep(7000);
-            break;
     }
 
     return TRUE;  
